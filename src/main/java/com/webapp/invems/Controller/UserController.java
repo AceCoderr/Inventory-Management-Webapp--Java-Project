@@ -2,16 +2,12 @@ package com.webapp.invems.Controller;
 
 import com.webapp.invems.Model.LoginRequest;
 import com.webapp.invems.Model.StoreUser;
-import com.webapp.invems.Model.StoreUserRepository;
-import com.webapp.invems.Model.StoreUserService;
-import jakarta.mail.Store;
-import jakarta.servlet.http.HttpSession;
+import com.webapp.invems.Utils.JwtUtil;
+import com.webapp.invems.repo.StoreUserRepository;
+import com.webapp.invems.services.StoreUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,18 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @Autowired
-    public StoreUserRepository storeUserRepository;
+    private StoreUserRepository storeUserRepository;
 
     @Autowired
-    public StoreUserService storeUserService;
+    private  StoreUserService storeUserService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping(value = "/login")
-    public ResponseEntity<String> Login(@RequestBody LoginRequest user, HttpSession session){
+    public ResponseEntity<String> Login(@RequestBody LoginRequest user){
         try{
             boolean isAuthenticated = storeUserService.authenticate(user.getUsername(), user.getPassword());
             if(isAuthenticated){
-                session.setAttribute("user",user.getUsername());
-                return ResponseEntity.ok("true");
+                String jwt = jwtUtil.generateToken(user.getUsername());
+                return new ResponseEntity<>(jwt,HttpStatus.OK);
             }else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
             }
@@ -45,4 +44,5 @@ public class UserController {
         StoreUser newUser = storeUserService.createUser(user);
         return newUser;
     }
+
 }

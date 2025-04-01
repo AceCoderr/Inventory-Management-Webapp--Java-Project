@@ -1,13 +1,20 @@
-package com.webapp.invems.Model;
+package com.webapp.invems.services;
 
+import com.webapp.invems.Model.StoreUser;
+import com.webapp.invems.repo.StoreUserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,6 +29,9 @@ public class StoreUserService implements UserDetailsService {
     @Autowired
     @Lazy
     private  PasswordEncoder passwordEncoder;
+
+//    @Autowired
+//    private  RedisService redisService;
 
     @Override
     public UserDetails loadUserByUsername(String username) {
@@ -39,9 +49,11 @@ public class StoreUserService implements UserDetailsService {
 
     public Boolean authenticate(String username, String password){
         UserDetails fetchedUser = loadUserByUsername(username);
+
         if(fetchedUser != null)
         {
-            return passwordEncoder.matches(username,fetchedUser.getPassword());
+            return passwordEncoder.matches(password,fetchedUser.getPassword());
+
         }
         return false;
     }

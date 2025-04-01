@@ -11,9 +11,17 @@ public class Product {
     private int quantity;
     private double price;
 
+    public StoreUser getStoreUser() {
+        return user;
+    }
+
+    public void setStoreUser(StoreUser storeUser) {
+        this.user = storeUser;
+    }
+
     @ManyToOne
-    @JoinColumn(name = "store_id",nullable = false)
-    private StoreUser storeUser;
+    @JoinColumn(name = "user_id")
+    private StoreUser user;
 
     public Long getId() {
         return id;

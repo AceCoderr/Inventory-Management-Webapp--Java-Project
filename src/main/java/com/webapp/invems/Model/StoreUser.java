@@ -1,9 +1,8 @@
 package com.webapp.invems.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 public class StoreUser {
@@ -13,6 +12,9 @@ public class StoreUser {
     private String username;
     private String email;
     private String password;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products; // One user can have multiple products
 
     public Long getId() {
         return id;
